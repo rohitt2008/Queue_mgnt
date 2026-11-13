@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  password     String
+  role         String   @default("MANAGER") // MANAGER, STAFF, ADMIN
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  queues       Queue[]  @relation("ManagerQueues")
+  servedTokens Token[]  @relation("ServedTokens")
+}
+
+model Queue {
+  id                String   @id @default(cuid())
+  name              String
+  description       String?
+  prefix            String   @default("Q")
+  color             String   @default("#6366F1") // Hex color or theme name
+  icon              String   @default("users")
+  status            String   @default("ACTIVE") // ACTIVE, PAUSED, CLOSED
+  targetServiceTime Int      @default(5) // In minutes
+  counterName       String   @default("Counter 1")
+  managerId         String
+  manager           User     @relation("ManagerQueues", fields: [managerId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tokens            Token[]
+
+  @@index([managerId])
+}
+
+model Token {
+  id                 String    @id @default(cuid())
+  tokenNumber        String    // e.g., "A-101", "VIP-005"
+  sequenceNumber     Int       // Sequential integer within queue
+  customerName       String
+  customerPhone      String?
+  customerEmail      String?
+  priority           String    @default("NORMAL") // NORMAL, PRIORITY, VIP
+  notes              String?
+  status             String    @default("WAITING") // WAITING, SERVING, COMPLETED, CANCELLED
+  position           Int       @default(1) // 1-indexed position in WAITING line
+  cancellationReason String?
+  counterName        String?   // e.g. "Counter 1"
+  servedById         String?
+  servedBy           User?     @relation("ServedTokens", fields: [servedById], references: [id], onDelete: SetNull)
+  queueId            String
+  queue              Queue     @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  
+  // Timestamps for accurate analytics
+  createdAt          DateTime  @default(now())
+  servedAt           DateTime?
+  completedAt        DateTime?
+  cancelledAt        DateTime?
+
+  // Durations in seconds for fast aggregation
+  waitTimeSeconds    Int?
+  serviceTimeSeconds Int?
+
+  @@index([queueId, status])
+  @@index([queueId, position])
+  @@index([createdAt])
+}
