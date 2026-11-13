@@ -146,3 +146,4 @@ async function testBackend() {
 
 // Allow server 1 second to start before testing
 setTimeout(testBackend, 1200);
+

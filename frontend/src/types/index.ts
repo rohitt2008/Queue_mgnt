@@ -120,3 +120,4 @@ export interface AnalyticsData {
   statusData: ChartItem[];
   queueComparison: QueueComparison[];
 }
+

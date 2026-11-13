@@ -14,26 +14,48 @@ async function main() {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash('password123', salt);
 
-  // 1. Create Default Managers
-  const manager1 = await prisma.user.create({
+  // 1. Create Default Pre-Seeded Accounts
+  const adminUser = await prisma.user.create({
     data: {
       name: 'Sarah Jenkins',
       email: 'admin@rugas.com',
       password: hashedPassword,
-      role: 'MANAGER',
+      role: 'ADMIN',
     },
   });
 
-  const manager2 = await prisma.user.create({
+  const leadUser = await prisma.user.create({
     data: {
       name: 'Alex Rivera',
-      email: 'alex@rugas.com',
+      email: 'lead@rugas.com',
       password: hashedPassword,
       role: 'MANAGER',
     },
   });
 
-  console.log('👤 Created Managers:', manager1.email, manager2.email);
+  const managerUser = await prisma.user.create({
+    data: {
+      name: 'David K. Miller',
+      email: 'manager@rugas.com',
+      password: hashedPassword,
+      role: 'MANAGER',
+    },
+  });
+
+  const staffUser = await prisma.user.create({
+    data: {
+      name: 'Elena Rostova',
+      email: 'staff@rugas.com',
+      password: hashedPassword,
+      role: 'STAFF',
+    },
+  });
+
+  console.log('👤 Created Pre-seeded Accounts:');
+  console.log('   - Admin: admin@rugas.com');
+  console.log('   - Lead: lead@rugas.com');
+  console.log('   - Manager: manager@rugas.com');
+  console.log('   - Staff: staff@rugas.com');
 
   // 2. Create Realistic Queues
   const vipQueue = await prisma.queue.create({
@@ -46,7 +68,7 @@ async function main() {
       status: 'ACTIVE',
       targetServiceTime: 8,
       counterName: 'Executive Suite 1',
-      managerId: manager1.id,
+      managerId: adminUser.id,
     },
   });
 
@@ -60,7 +82,7 @@ async function main() {
       status: 'ACTIVE',
       targetServiceTime: 5,
       counterName: 'Desk 2',
-      managerId: manager1.id,
+      managerId: leadUser.id,
     },
   });
 
@@ -74,7 +96,7 @@ async function main() {
       status: 'ACTIVE',
       targetServiceTime: 3,
       counterName: 'Counter 3',
-      managerId: manager2.id,
+      managerId: managerUser.id,
     },
   });
 
@@ -88,7 +110,7 @@ async function main() {
       status: 'ACTIVE',
       targetServiceTime: 6,
       counterName: 'Window A',
-      managerId: manager2.id,
+      managerId: managerUser.id,
     },
   });
 
@@ -110,7 +132,7 @@ async function main() {
       status: 'SERVING',
       position: 0,
       counterName: 'Desk 2',
-      servedById: manager1.id,
+      servedById: leadUser.id,
       createdAt: new Date(now.getTime() - 14 * 60 * 1000), // 14 mins ago
       servedAt: new Date(now.getTime() - 4 * 60 * 1000), // 4 mins ago
       waitTimeSeconds: 600, // 10 mins wait
@@ -200,7 +222,7 @@ async function main() {
         status: 'COMPLETED',
         position: 0,
         counterName: 'Desk 2',
-        servedById: manager1.id,
+        servedById: leadUser.id,
         createdAt: created,
         servedAt: served,
         completedAt: completed,
@@ -238,7 +260,7 @@ async function main() {
       status: 'SERVING',
       position: 0,
       counterName: 'Executive Suite 1',
-      servedById: manager1.id,
+      servedById: adminUser.id,
       createdAt: new Date(now.getTime() - 25 * 60 * 1000),
       servedAt: new Date(now.getTime() - 6 * 60 * 1000),
       waitTimeSeconds: 1140,
@@ -348,3 +370,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

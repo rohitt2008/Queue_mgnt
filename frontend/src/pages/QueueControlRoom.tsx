@@ -896,3 +896,4 @@ export const QueueControlRoom: React.FC = () => {
     </div>
   );
 };
+

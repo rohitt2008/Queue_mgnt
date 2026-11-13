@@ -24,3 +24,4 @@ router.post('/:id/complete', authenticate, completeToken);
 router.post('/:id/cancel', authenticate, cancelToken); // Req 7: Cancel a token
 
 export default router;
+

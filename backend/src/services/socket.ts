@@ -43,3 +43,4 @@ export const emitQueueUpdate = (queueId: string, event: string, payload: any) =>
     io.emit('queue_overview_change', { queueId, event });
   }
 };
+

@@ -193,14 +193,18 @@ npm run dev
 
 ---
 
-## 🔑 Pre-Configured Demo Manager Accounts
+## 🔑 Pre-Configured Demo Accounts (1-Click Login)
 
-| Role | Email | Password | Pre-seeded Queues |
-| :--- | :--- | :--- | :--- |
-| **Queue Director** | `admin@rugas.com` | `password123` | VIP Wealth, Customer Support |
-| **Operations Lead** | `alex@rugas.com` | `password123` | Express Billing, Pharmacy |
+The login screen features an **instant 1-click access box** with 4 pre-configured roles:
 
-*(One-click demo login buttons are also available directly on the login screen!)*
+| Account Role | Badge | Email | Password | Assigned Counter / Queue |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sarah Jenkins** | `👑 SUPER ADMIN` | `admin@rugas.com` | `password123` | VIP Wealth & Premier Desk |
+| **Alex Rivera** | `⚡ OPERATIONS LEAD` | `lead@rugas.com` | `password123` | Customer Support Desk 2 |
+| **David K. Miller** | `🛡️ QUEUE MANAGER` | `manager@rugas.com` | `password123` | Express Billing Counter 3 |
+| **Elena Rostova** | `🎯 COUNTER STAFF` | `staff@rugas.com` | `password123` | Prescription Dispense Window A |
+
+> 💡 **Tip:** Simply click on any account card on the Login screen to authenticate immediately without typing credentials!
 
 ---
 

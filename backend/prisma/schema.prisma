@@ -72,3 +72,4 @@ model Token {
   @@index([queueId, position])
   @@index([createdAt])
 }
+

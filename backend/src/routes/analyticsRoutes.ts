@@ -7,3 +7,4 @@ const router = Router();
 router.get('/:queueId?', authenticate, getQueueAnalytics);
 
 export default router;
+

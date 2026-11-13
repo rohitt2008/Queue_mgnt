@@ -542,3 +542,4 @@ export const QueuesDashboard: React.FC = () => {
     </div>
   );
 };
+

@@ -134,3 +134,4 @@ export const me = async (req: AuthenticatedRequest, res: Response): Promise<void
     res.status(500).json({ success: false, message: 'Failed to fetch user profile' });
   }
 };
+

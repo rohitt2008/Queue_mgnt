@@ -25,3 +25,4 @@ export const leaveQueueRoom = (queueId: string) => {
   const s = getSocket();
   s.emit('leave_queue', queueId);
 };
+

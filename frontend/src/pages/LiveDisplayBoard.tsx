@@ -330,3 +330,4 @@ export const LiveDisplayBoard: React.FC = () => {
     </div>
   );
 };
+

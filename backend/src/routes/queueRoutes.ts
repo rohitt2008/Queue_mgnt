@@ -18,3 +18,4 @@ router.patch('/:id', authenticate, updateQueue);
 router.delete('/:id', authenticate, deleteQueue);
 
 export default router;
+
