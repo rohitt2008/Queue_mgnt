@@ -3,6 +3,9 @@ import http from 'http';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 import { initSocket } from './services/socket.js';
 import authRoutes from './routes/authRoutes.js';
@@ -11,6 +14,9 @@ import tokenRoutes from './routes/tokenRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -44,10 +50,33 @@ app.use('/api/queues', queueRoutes);
 app.use('/api/tokens', tokenRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route ${req.method} ${req.url} not found` });
-});
+// In Production / Unified mode: Serve Vite Frontend static assets if built
+const possibleFrontendPaths = [
+  path.resolve(__dirname, '../../frontend/dist'),
+  path.resolve(__dirname, '../frontend/dist'),
+  path.resolve(process.cwd(), '../frontend/dist'),
+  path.resolve(process.cwd(), 'frontend/dist'),
+];
+
+let frontendDistPath = possibleFrontendPaths.find((p) => fs.existsSync(p));
+
+if (frontendDistPath) {
+  console.log(`📦 Serving production frontend build from: ${frontendDistPath}`);
+  app.use(express.static(frontendDistPath));
+
+  // SPA fallback for React Router
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path === '/health') {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath!, 'index.html'));
+  });
+} else {
+  // 404 handler when frontend build is not served
+  app.use((req, res) => {
+    res.status(404).json({ success: false, message: `Route ${req.method} ${req.url} not found` });
+  });
+}
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -61,7 +90,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 const PORT = Number(process.env.PORT) || 5001;
 
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Queue Management API server running on port ${PORT}`);
+  console.log(`🚀 Queue Management server running on port ${PORT}`);
   console.log(`📡 WebSocket server initialized`);
   console.log(`📊 Health check available at http://localhost:${PORT}/health`);
 });

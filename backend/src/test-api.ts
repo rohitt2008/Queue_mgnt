@@ -7,7 +7,7 @@ async function testBackend() {
   try {
     // 1. Health check
     const healthRes = await fetch(`${baseUrl}/health`);
-    const health = await healthRes.json();
+    const health = (await healthRes.json()) as any;
     console.log('✅ Health check:', health.status);
 
     // 2. Login as Manager
@@ -16,7 +16,7 @@ async function testBackend() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: 'admin@rugas.com', password: 'password123' }),
     });
-    const loginData = await loginRes.json();
+    const loginData = (await loginRes.json()) as any;
     if (!loginData.token) throw new Error('Login failed: ' + JSON.stringify(loginData));
     const token = loginData.token;
     console.log('✅ Manager Login Success! Manager Name:', loginData.user.name);
@@ -38,7 +38,7 @@ async function testBackend() {
         targetServiceTime: 4,
       }),
     });
-    const queueData = await createQueueRes.json();
+    const queueData = (await createQueueRes.json()) as any;
     const testQueueId = queueData.queue.id;
     console.log(`✅ Created Queue: "${queueData.queue.name}" with ID: ${testQueueId}`);
 
@@ -52,7 +52,7 @@ async function testBackend() {
         notes: 'Compiler optimization discussion',
       }),
     });
-    const token1 = (await token1Res.json()).token;
+    const token1 = ((await token1Res.json()) as any).token;
 
     const token2Res = await fetch(`${baseUrl}/api/tokens/queue/${testQueueId}`, {
       method: 'POST',
@@ -63,7 +63,7 @@ async function testBackend() {
         notes: 'Enigma decryption queue',
       }),
     });
-    const token2 = (await token2Res.json()).token;
+    const token2 = ((await token2Res.json()) as any).token;
 
     const token3Res = await fetch(`${baseUrl}/api/tokens/queue/${testQueueId}`, {
       method: 'POST',
@@ -74,7 +74,7 @@ async function testBackend() {
         notes: 'Analytical Engine check',
       }),
     });
-    const token3 = (await token3Res.json()).token;
+    const token3 = ((await token3Res.json()) as any).token;
 
     console.log(`✅ Generated Tokens: ${token1.tokenNumber} (pos: ${token1.position}), ${token2.tokenNumber} (pos: ${token2.position}), ${token3.tokenNumber} (pos: ${token3.position})`);
 
@@ -85,7 +85,7 @@ async function testBackend() {
       headers: authHeaders,
       body: JSON.stringify({ direction: 'down' }),
     });
-    const moveDownData = await moveDownRes.json();
+    const moveDownData = (await moveDownRes.json()) as any;
     console.log('✅ Moved Token 1 down. New list order:', moveDownData.tokens.map((t: any) => `${t.tokenNumber} (#${t.position})`).join(', '));
 
     const moveUpRes = await fetch(`${baseUrl}/api/tokens/${token1.id}/move`, {
@@ -93,7 +93,7 @@ async function testBackend() {
       headers: authHeaders,
       body: JSON.stringify({ direction: 'up' }),
     });
-    const moveUpData = await moveUpRes.json();
+    const moveUpData = (await moveUpRes.json()) as any;
     console.log('✅ Moved Token 1 back up to top. Top token is now:', moveUpData.tokens[0].tokenNumber);
 
     // 6. Test Serve Top Token (One-click button)
@@ -103,7 +103,7 @@ async function testBackend() {
       headers: authHeaders,
       body: JSON.stringify({ autoFinishServing: true }),
     });
-    const serveData = await serveRes.json();
+    const serveData = (await serveRes.json()) as any;
     console.log(`✅ Top token served! Token: ${serveData.servedToken.tokenNumber} for customer ${serveData.servedToken.customerName}`);
     console.log('   New waiting list:', serveData.waitingTokens.map((t: any) => `${t.tokenNumber} (#${t.position})`).join(', '));
 
@@ -113,7 +113,7 @@ async function testBackend() {
       method: 'POST',
       headers: authHeaders,
     });
-    const completeData = await completeRes.json();
+    const completeData = (await completeRes.json()) as any;
     console.log(`✅ Marked ${completeData.token.tokenNumber} as COMPLETED!`);
 
     // 8. Cancel a token
@@ -123,7 +123,7 @@ async function testBackend() {
       headers: authHeaders,
       body: JSON.stringify({ reason: 'Customer requested reschedule' }),
     });
-    const cancelData = await cancelRes.json();
+    const cancelData = (await cancelRes.json()) as any;
     console.log(`✅ Cancelled token ${cancelData.token.tokenNumber}. Remaining waiting count:`, cancelData.waitingTokens.length);
 
     // 9. Test Analytics endpoint
@@ -131,7 +131,7 @@ async function testBackend() {
     const analyticsRes = await fetch(`${baseUrl}/api/analytics/${testQueueId}`, {
       headers: authHeaders,
     });
-    const analyticsData = await analyticsRes.json();
+    const analyticsData = (await analyticsRes.json()) as any;
     console.log('✅ Analytics Summary:', analyticsData.summary);
 
     console.log('🎉 ALL BACKEND API REQUIREMENTS VERIFIED SUCCESSFULLY!');
@@ -146,4 +146,3 @@ async function testBackend() {
 
 // Allow server 1 second to start before testing
 setTimeout(testBackend, 1200);
-
