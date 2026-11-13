@@ -32,6 +32,7 @@ prisma/*.db
 prisma/*.sqlite
 
 # OS and Editor files
+*.tsbuildinfo
 .DS_Store
 Thumbs.db
 .vscode/
